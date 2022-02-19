@@ -7,13 +7,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import static model.Race.HOBBIT;
-import static model.Race.MAIA;
+import static model.Race.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DataServiceTest {
@@ -86,19 +86,53 @@ class DataServiceTest {
     void ensureOrdering(){
         List<TolkienCharacter> fellowship = dataService.getFellowship();
         assertAll(
-                () -> assertEquals(dataService.getFellowshipCharacter("Frodo"),dataService.getFellowship().get(0)),
-        () -> assertEquals(dataService.getFellowshipCharacter("Sam"),dataService.getFellowship().get(1)),
-        () -> assertEquals(dataService.getFellowshipCharacter("Merry"),dataService.getFellowship().get(2)),
-        () -> assertEquals(dataService.getFellowshipCharacter("Pippin"),dataService.getFellowship().get(3)),
-        () -> assertEquals(dataService.getFellowshipCharacter("Gandalf"),dataService.getFellowship().get(4)),
-        () -> assertEquals(dataService.getFellowshipCharacter("Legolas"),dataService.getFellowship().get(5)),
-        () -> assertEquals(dataService.getFellowshipCharacter("Gimli"),dataService.getFellowship().get(6)),
-        () -> assertEquals(dataService.getFellowshipCharacter("Aragorn"),dataService.getFellowship().get(7)),
-        () -> assertEquals(dataService.getFellowshipCharacter("Boromir"),dataService.getFellowship().get(8))
+                () -> assertEquals(dataService.getFellowshipCharacter("Frodo"),fellowship.get(0)),
+        () -> assertEquals(dataService.getFellowshipCharacter("Sam"),fellowship.get(1)),
+        () -> assertEquals(dataService.getFellowshipCharacter("Merry"),fellowship.get(2)),
+        () -> assertEquals(dataService.getFellowshipCharacter("Pippin"),fellowship.get(3)),
+        () -> assertEquals(dataService.getFellowshipCharacter("Gandalf"),fellowship.get(4)),
+        () -> assertEquals(dataService.getFellowshipCharacter("Legolas"),fellowship.get(5)),
+        () -> assertEquals(dataService.getFellowshipCharacter("Gimli"),fellowship.get(6)),
+        () -> assertEquals(dataService.getFellowshipCharacter("Aragorn"),fellowship.get(7)),
+        () -> assertEquals(dataService.getFellowshipCharacter("Boromir"),fellowship.get(8))
         );
     }
 
-    
+    @Test
+    void ensureAge(){
+        List<TolkienCharacter> fellowship = dataService.getFellowship();
+//        assertFalse(fellowship.stream()
+//                .filter(fellow -> (fellow.getRace().equals(HOBBIT)
+//                        || fellow.getRace().equals(MAN)))
+//                .anyMatch(ages -> ages.age >= 100));
+        assertTrue(fellowship.stream()
+                .filter(fellow -> (fellow.getRace().equals(HOBBIT)
+                        || fellow.getRace().equals(MAN)))
+                .allMatch(ages -> ages.age < 100));
+//        assertFalse(fellowship.stream()
+//                .filter(fellow -> fellow.getRace().equals(ELF)
+//                        || fellow.getRace().equals(DWARF)
+//                        || fellow.getRace().equals(MAIA))
+//                .anyMatch(ages -> ages.age <= 100));
+        assertTrue(fellowship.stream()
+                .filter(fellow -> fellow.getRace().equals(ELF)
+                        || fellow.getRace().equals(DWARF)
+                        || fellow.getRace().equals(MAIA))
+                .allMatch(ages -> ages.age >= 100));
+    }
+
+    @Test
+    void ensureThatFellowsStayASmallGroup(){
+        List<TolkienCharacter> fellowship = dataService.getFellowship();
+        assertThrows(IndexOutOfBoundsException.class, () -> fellowship.get(20));
+    }
+
+    @Test
+    void ensureThatTestDoesNotRunMoreThenFewSeconds(){
+        assertTimeout(Duration.ofSeconds(3),() -> dataService.update());
+    }
+
+
 
 
 
