@@ -12,7 +12,10 @@ public class TolkienCharacter {
 
     public TolkienCharacter(String name, int age, Race race) {
         this.name = name;
-        this.age = age;
+        //if (age<0) {
+            //throw new IllegalArgumentException("Age is not allowed to be smaller than zero");
+        //}
+        setAge(age);
         this.race = race;
     }
 
